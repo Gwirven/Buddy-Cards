@@ -1,0 +1,76 @@
+/* Name bar + flavour text drawn on the card face. Used by the overlay and the collection pages.
+   Everything is sized in "cqw" (1% of the card's width), so it scales with the card.
+   To restyle: edit the variables below.  --inset should be a little wider than your border's thickness
+   (the sample border is 6.4% of the card width). */
+:root { --steel: #cdd2de; }   /* Common frame + tab: plain solid colour. The brushed texture lives only in the border PNG. */
+/* spare: the generated brushed finish, if it's ever wanted again: --steel-tex: linear-gradient(105deg,rgba(255,255,255,.38) 0%,rgba(255,255,255,0) 28%,rgba(255,255,255,.28) 52%,rgba(120,130,150,.18) 74%,rgba(255,255,255,.3) 100%), url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n' x='0' y='0' width='100%' height='100%'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.012 0.85' numOctaves='3' seed='7' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='0 0 0 0 .5  0 0 0 0 .5  0 0 0 0 .5  1.6 0 0 0 -.45'/%3E%3C/filter%3E%3Crect width='240' height='240' fill='%23cdd2de'/%3E%3Crect width='240' height='240' filter='url(%23n)' opacity='.55' style='mix-blend-mode:multiply'/%3E%3Cfilter id='m' x='0' y='0' width='100%' height='100%'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.01 0.6' numOctaves='2' seed='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 1.8 0 0 -.7'/%3E%3C/filter%3E%3Crect width='240' height='240' filter='url(%23m)' opacity='.6'/%3E%3C/svg%3E") 0 0 / 240px 240px, #cdd2de; */
+.ctx {
+  --inset: 4cqw;
+  --tabh: 6cqw;                          /* serial tab height (same on every card) */
+  --solid: 94cqw;                        /* bordered cards: where the solid area starts (below the square art window) */                         /* full-art cards: gap from the card edge */
+  --bg: rgba(8, 10, 18, .58);            /* panel colour */
+  --fg: #fff;
+  --edge: rgba(255, 255, 255, .28);
+  position: absolute; inset: 0; container-type: size; pointer-events: none; z-index: 2;
+  font-family: "Lilita One", Impact, sans-serif;
+}
+.ctx.bordered {                          /* cards that have a border-X.png: the same dark frosted glass as full art, sitting on the border */
+  --inset: 8cqw;
+}
+.ctx-name, .ctx-flav {
+  position: absolute; left: var(--inset); right: var(--inset);
+  background: var(--bg); color: var(--fg); border: .5cqw solid var(--edge); border-radius: 2cqw;
+  box-sizing: border-box; text-align: center;
+}
+.ctx.bordered .ctx-name, .ctx.bordered .ctx-flav { -webkit-backdrop-filter: blur(2px); backdrop-filter: blur(2px); }
+.ctx.bordered .ctx-name { top: calc(var(--solid) + 3.6cqw); height: 8.6cqw; font-size: 5.4cqw; padding-top: 0; padding-bottom: 0; display: flex; align-items: center; justify-content: center; }
+.ctx-flav.has-stats { gap: 2.5cqw; justify-content: flex-start; }   /* text left, stats diamond right: keeps the box short */
+.ctx-flav.has-stats p { flex: 1; min-width: 0; text-align: left; }
+.ctx-flav.has-stats p + .ctx-foot { margin-top: 0; }
+.ctx-flav .ctx-foot { margin-left: auto; }
+/* Triple Triad view: one box covering where the name bar and flavour box sit, stats big and centred so
+   they're readable even on a phone. Same place on bordered and full-art cards. */
+.ctx-flav.triad { top: calc(var(--solid) + 3.6cqw); justify-content: center; align-items: center; padding: 1cqw; }
+.ctx-flav.triad .ctx-foot { margin: 0 auto; }
+.ctx-flav.triad .ctx-st { grid-template: repeat(3, 10.6cqw) / repeat(3, 16cqw); font-size: 12.5cqw; line-height: 10.6cqw; }
+.ctx-empty { opacity: .6; }
+.ctx-st { grid-template: repeat(3, 7cqw) / repeat(3, 7cqw); font-size: 6.8cqw; line-height: 7cqw; }
+.ctx-name { position: absolute; top: var(--inset); padding: .8cqw 3cqw .5cqw; font-size: 6.4cqw; line-height: 1.15;
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ctx-name.has-rank { padding-left: calc(5cqw + var(--rk) * 3.8cqw); padding-right: calc(5cqw + var(--rk) * 3.8cqw); }      /* keeps the name centred with the stars on the right */
+.ctx-stars { position: absolute; right: 2.6cqw; top: 50%; transform: translateY(-48%); font-size: 3.7cqw; line-height: 1;
+             letter-spacing: -.02em; color: #c8860a; text-shadow: 0 0 .5cqw rgba(255,235,170,.9), 0 .25cqw 0 rgba(60,44,18,.35); }
+.ctx-flav { left: 8cqw; right: 8cqw; top: calc(var(--solid) + 14.2cqw); bottom: calc(var(--tabh) + 1.6cqw); padding: 1.6cqw 3cqw;
+            display: flex; align-items: center; justify-content: center; }   /* fixed height: text and stats views are the same box */   /* same size and place on bordered and full-art cards */      /* sits just above the serial tab */
+.ctx-flav p { margin: 0; min-width: 0; font-family: Georgia, "Times New Roman", serif; font-style: italic; font-weight: 600;
+              font-size: 4.1cqw; line-height: 1.22;
+              display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 4; overflow: hidden; }
+.ctx-serial { text-align: left; font-family: ui-monospace, Consolas, "Courier New", monospace; font-style: normal;
+              font-weight: 700; font-size: 3.3cqw; line-height: 1; letter-spacing: .06em; opacity: .7; }
+.ctx-flav p + .ctx-foot { margin-top: 1.4cqw; }
+.ctx-foot { display: flex; justify-content: flex-end; align-items: flex-end; gap: 2cqw; }
+/* Triple Triad stats: a little diamond (top / left / right / bottom) at the right end of the footer */
+.ctx-st { display: grid; grid-template: repeat(3, 7cqw) / repeat(3, 7cqw); font: 800 6.8cqw/7cqw ui-monospace, Consolas, "Courier New", monospace;
+          font-style: normal; text-align: center; }
+.ctx-st b { font-weight: 800; }
+.ctx-st .t { grid-area: 1 / 2; } .ctx-st .l { grid-area: 2 / 1; } .ctx-st .r { grid-area: 2 / 3; } .ctx-st .b { grid-area: 3 / 2; }
+.ctx-flav.has-stats { padding: 1.6cqw 3cqw; }
+@container (max-width: 150px) { .ctx-flav:not(.has-stats) { display: none; } .ctx-flav p { display: none; } }   /* too small to read on tiny tiles */
+
+/* Serial tab: a small tab centred on the bottom edge, in the frame's colour, so it reads as part of the frame.
+   The shape is one mirrored curve (both shoulders identical), stretched to the tab's size. Edit --tab-w to
+   resize it, or the colours below to match your frame. */
+.ctab { position: absolute; left: 50%; bottom: 0; transform: translateX(-50%); z-index: 3;
+        width: var(--tab-w, 40cqw); height: var(--tabh);
+        display: flex; align-items: center; justify-content: center; padding-top: .6cqw; box-sizing: border-box;
+        filter: drop-shadow(0 -.25cqw .35cqw rgba(0, 0, 0, .35));
+        font: 800 3.9cqw/1 ui-monospace, Consolas, "Courier New", monospace; letter-spacing: .09em; color: #1a1d2b; white-space: nowrap; }
+.ctab i { position: absolute; inset: 0; background: var(--steel);
+          -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 20' preserveAspectRatio='none'%3E%3Cpath d='M0 20C9 20 8 0 17 0H83C92 0 91 20 100 20Z'/%3E%3C/svg%3E") center / 100% 100% no-repeat;
+                  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 20' preserveAspectRatio='none'%3E%3Cpath d='M0 20C9 20 8 0 17 0H83C92 0 91 20 100 20Z'/%3E%3C/svg%3E") center / 100% 100% no-repeat; }
+.ctab > span { position: relative; }
+.ctab.R i { background: var(--c-rare, #ffc845); }
+.ctab.H i {                              /* the same rainbow as the Holo frame, so the tab is part of the border:
+                                            a conic gradient centred on the middle of the card, and on stream it spins with it */
+  background: conic-gradient(from var(--spin, 0deg) at 50% calc(100% - 50cqh), #ff6b6b, #ffd93d, #6bff95, #4dd2ff, #b98cff, #ff6b6b); }
+@container (max-width: 120px) { .ctab > span { display: none; } }   /* on tiny tiles the tab stays (it's part of the frame) but the text goes */

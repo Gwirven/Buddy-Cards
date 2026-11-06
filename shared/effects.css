@@ -1,0 +1,94 @@
+/* Rarity effects for card faces (used by the stream overlay and the collection pages).
+   Common = plain art. Rare = rainbow sparkle. Holo = starlight foil.
+   The art file is never edited: effects are layered on top at display time, so one
+   image per card is all you need. effects.js adds the layers to any element marked
+   data-fx="R" or data-fx="H".
+
+   The layers are direct children of the face so their blend modes mix with the artwork
+   underneath. Tweak opacity / colours here to taste. */
+
+[data-fx] { isolation: isolate; }
+[data-fx] > .fxl { position: absolute; display: block; pointer-events: none; }
+
+/* a small lift on the art itself */
+[data-fx="R"] > img, [data-fx="R"] > .ph, [data-fx="R"] > .placeholder { filter: saturate(1.1) contrast(1.03); }
+[data-fx="H"] > img, [data-fx="H"] > .ph, [data-fx="H"] > .placeholder { filter: saturate(1.2) contrast(1.05); }
+
+/* ---- sparkles: a bright glint with thin cross rays ---- */
+[data-fx] > .sp {
+  left: var(--x); top: var(--y); width: var(--s); height: var(--s);
+  transform: translate(-50%, -50%) scale(0); opacity: 0;
+  background:
+    radial-gradient(circle, #fff 0 9%, rgba(255,255,255,.6) 16%, transparent 46%),
+    linear-gradient(90deg, transparent, var(--c, #fff), transparent) center / 100% 8% no-repeat,
+    linear-gradient(0deg,  transparent, var(--c, #fff), transparent) center / 8% 100% no-repeat;
+  animation: fx-twinkle var(--d) ease-in-out var(--w) infinite;
+}
+@keyframes fx-twinkle {
+  0%, 100% { transform: translate(-50%, -50%) scale(0) rotate(0deg);  opacity: 0; }
+  50%      { transform: translate(-50%, -50%) scale(1) rotate(50deg); opacity: 1; }
+}
+
+/* ---- RARE: rainbow tint that drifts across the art + sparkles ---- */
+[data-fx="R"] > .wash {
+  inset: 0; mix-blend-mode: overlay; opacity: .68;
+  background: linear-gradient(120deg, #ff5f9e, #ffc94d, #5dffa6, #4dc7ff, #a878ff, #ff5f9e);
+  background-size: 300% 300%;
+  animation: fx-drift 9s ease-in-out infinite alternate;
+}
+@keyframes fx-drift { from { background-position: 0% 30%; } to { background-position: 100% 70%; } }
+[data-fx="R"] > .sweep {
+  inset: 0; mix-blend-mode: screen;
+  background: linear-gradient(115deg, transparent 38%, rgba(255,255,255,.3) 50%, transparent 62%);
+  background-size: 300% 100%; animation: fx-sweep 4.5s ease-in-out infinite;
+}
+@keyframes fx-sweep { from { background-position: 100% 0; } to { background-position: -100% 0; } }
+
+/* ---- HOLO (starlight): prismatic foil + fine glitter + big star glints ---- */
+[data-fx="H"] > .foil {
+  inset: -2%; mix-blend-mode: overlay; opacity: .75;
+  background: linear-gradient(115deg, #ff5fa8, #ffd25f, #6dffa8, #5fd0ff, #a77dff,
+                                      #ff5fa8, #ffd25f, #6dffa8, #5fd0ff, #a77dff);
+  background-size: 260% 260%; background-position: var(--mx, 0%) var(--my, 0%);
+  animation: fx-foil 7s ease-in-out infinite alternate;
+}
+@keyframes fx-foil { from { background-position: 0% 0%; } to { background-position: 100% 100%; } }
+[data-fx="H"].live > .foil { animation: none; transition: background-position .08s linear; }
+
+[data-fx="H"] > .g1, [data-fx="H"] > .g2 { inset: 0; mix-blend-mode: screen; }
+[data-fx="H"] > .g1 {
+  background-image:
+    radial-gradient(circle, #fff 0 .8px, transparent 1.4px),
+    radial-gradient(circle, #ffe9fb 0 .7px, transparent 1.3px),
+    radial-gradient(circle, #e9fbff 0 .8px, transparent 1.4px);
+  background-size: 41px 45px, 57px 51px, 77px 73px;
+  background-position: 0 0, 13px 19px, 29px 7px;
+  animation: fx-glit 2.2s ease-in-out infinite;
+}
+[data-fx="H"] > .g2 {
+  background-image:
+    radial-gradient(circle, #fff 0 .8px, transparent 1.4px),
+    radial-gradient(circle, #fff3d6 0 .7px, transparent 1.3px),
+    radial-gradient(circle, #e3f0ff 0 .8px, transparent 1.4px);
+  background-size: 47px 43px, 65px 63px, 83px 87px;
+  background-position: 21px 9px, 5px 33px, 47px 51px;
+  animation: fx-glit 2.2s ease-in-out -1.1s infinite;
+}
+@keyframes fx-glit { 0%, 100% { opacity: .1; } 50% { opacity: .85; } }
+
+[data-fx="H"] > .sweep {
+  inset: 0; mix-blend-mode: color-dodge;
+  background: linear-gradient(115deg, transparent 28%, rgba(255,120,200,.3) 38%, rgba(120,255,240,.35) 48%,
+                                      rgba(255,240,120,.3) 58%, transparent 68%);
+  background-size: 300% 100%; animation: fx-sweep 3.4s ease-in-out infinite;
+}
+[data-fx="H"] > .glare {
+  inset: 0; opacity: 0; mix-blend-mode: overlay; transition: opacity .2s;
+  background: radial-gradient(circle at var(--mx, 50%) var(--my, 50%), rgba(255,255,255,.55), transparent 45%);
+}
+[data-fx="H"].live > .glare { opacity: 1; }
+
+@media (prefers-reduced-motion: reduce) {
+  [data-fx] > .fxl { animation: none !important; }
+  [data-fx] > .sp { opacity: .85; transform: translate(-50%, -50%) scale(.8); }
+}
